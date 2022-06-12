@@ -1,0 +1,133 @@
+<html>
+
+<head>
+    <title>Uchikomi</title>
+<style>
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+    margin: 8px;
+
+    font-family: sans-serif;
+}
+
+#actions {
+	margin-bottom: 30px;
+}
+
+#play-area {
+	display: none;
+	width: 100%;
+	height: 100%;
+}
+
+#action {
+	font-size: 300px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+</style>
+</head>
+
+<body>
+
+	<div id='define-area'>
+		<textarea id='actions' rows=10>
+Men 3
+Kote 3
+Do 2
+Tsuki
+		</textarea>
+	<div>	
+		<button id='play' onclick="play()">Play</button>
+	</div>
+
+	</div>
+
+	<div id='play-area' onclick='define()'>
+		<div id='action'/>
+	</div>
+
+
+<script>
+const regex = /^(\w+)\s*(\d+)?$/;
+const id = function(id) { return document.getElementById(id); };
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
+
+document.addEventListener('keyup', e => {
+    if(e.ctrlKey && e.key == 'Enter') {
+        play();
+    }
+})
+
+let actions = [];
+let timeoutId = null;
+
+function play() {
+	const actionsText = id('actions').value;
+	const lines = actionsText.trim().split("\n");
+	actions = [];
+	for(line of lines) {
+	  const match = line.trim().match(regex);
+	  const actionName = match[1];
+	  console.log(match.length);
+	  const weight = match[2] == undefined ? 1 : parseInt(match[2].trim());
+	  for(let i = 0; i < weight; i++) {
+	  	actions.push(actionName);
+	  }
+	}
+
+	console.log(actions);
+	id('play-area').style.display = 'block';
+	id('define-area').style.display = 'none';
+	scheduleNextAction();
+}
+
+function define() {
+	id('play-area').style.display = 'none';
+	id('define-area').style.display = 'block';
+	clearTimeout(timeoutId);
+
+}
+
+
+function scheduleNextAction() {
+	const minSec = 10;
+	const maxSec = 40;
+	const delay = 1000 * Math.random() * (maxSec - minSec) + minSec;
+	const numActions = actions.length;
+
+	timeoutId = setTimeout(
+	    () => {
+	    	const actionIndex = getRandomInt(0, numActions);
+	    	const action = actions[actionIndex];
+
+				console.log("Scheduling '" + action + "' in " + delay / 1000 + " seconds.");
+
+	    	id('action').innerText = action;
+	    	scheduleClearAction();
+	    },
+	    delay);
+}
+
+function scheduleClearAction() {
+	timeoutId = setTimeout(
+	    () => {
+	    	id('action').innerText = '';
+	    	scheduleNextAction();
+	    },
+	    3000);
+}
+
+</script>
+</body>
+
