@@ -36,6 +36,12 @@ body {
 <body>
 
 	<div id='define-area'>
+		<label for'min-seconds'> Minimum seconds:
+	    <input type="text" id='min-seconds' value = '5'>
+	    <br/>
+	    <label for'max-seconds'> Maximum seconds:
+	    <input type="text" id='max-seconds' value = '30'>
+	    <br/>
 		<textarea id='actions' rows=10>
 Men 3
 Kote 3
@@ -101,18 +107,17 @@ function define() {
 
 
 function scheduleNextAction() {
-	const minSec = 10;
-	const maxSec = 40;
-	const delay = 1000 * Math.random() * (maxSec - minSec) + minSec;
+	let minSec = parseInt(id('min-seconds').value.trim());
+	let maxSec = parseInt(id('max-seconds').value.trim());
+	const delay = 1000 * Math.random() * (maxSec - minSec) + minSec * 1000;
 	const numActions = actions.length;
+	
+	const actionIndex = getRandomInt(0, numActions);
+	const action = actions[actionIndex];
+	console.log("Scheduling '" + action + "' in " + delay / 1000 + " seconds.");
 
 	timeoutId = setTimeout(
 	    () => {
-	    	const actionIndex = getRandomInt(0, numActions);
-	    	const action = actions[actionIndex];
-
-				console.log("Scheduling '" + action + "' in " + delay / 1000 + " seconds.");
-
 	    	id('action').innerText = action;
 	    	scheduleClearAction();
 	    },
